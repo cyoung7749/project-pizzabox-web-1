@@ -4,8 +4,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: dotnet build
-  # test: xunit + coverlet
-  # analyze: sonarcloud = static code analysis
+
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: dotnet test -p:CollectCoverage=true -p:CoverletOutputFormat=opencover -p:CoverletOutput='test_coverage/' -l trx -o 'test_result/'
+
+  analyze:
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: dotnet tool install -g dotnet-sonarscanner
+      - run: dotnet sonarscanner begin -k:'pizzabox' -o:'2104-12-dotnet' -d.sonar.login=$SONAR_TOKEN -d.sonar.url='https://sonarcloud.io'
+      - run: dotnet build
+      - run: dotnet sonarscanner end -d.sonar.login=$SONAR_TOKEN
+
   # package: docker image
 
 name: ci-pipeline
