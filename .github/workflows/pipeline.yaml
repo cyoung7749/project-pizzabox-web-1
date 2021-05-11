@@ -41,12 +41,15 @@ jobs:
       - run: docker push fredbelotte/pizzabox
       - run: docker logout
 
-  # login:
-  #   needs:
-  #     - package
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - uses: azure/login@v1
+  login:
+    needs:
+      - package
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
   # deploy:
   #   needs:
   #     - login
