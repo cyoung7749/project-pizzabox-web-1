@@ -28,7 +28,7 @@ namespace PizzaBox.Client
       services.AddScoped<UnitOfWork>();
       services.AddDbContext<PizzaBoxContext>(options =>
       {
-        options.UseNpgsql(Configuration.GetConnectionString("pgsql"), opts =>
+        options.UseNpgsql("server=localhost;database=PizzaBoxDB;user id=postgres;password=postgres;", opts =>
         {
           opts.EnableRetryOnFailure(3);
         });

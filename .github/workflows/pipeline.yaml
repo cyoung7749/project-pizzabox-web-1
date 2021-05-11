@@ -26,7 +26,34 @@ jobs:
       - run: dotnet build
       - run: dotnet sonarscanner end -d:sonar.login=$SONAR_TOKEN
 
-  # package: docker image
+  package:
+    needs:
+      - analyze
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker login
+      - run: docker image build -f Dockerfile -t pizzabox .
+      - run: docker image tag pizzabox fredbelotte/pizzabox
+      - run: docker push fredbelotte/pizzabox
+      - run: docker logout
+
+  login:
+    needs:
+      - package
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: azure/login@v1
+
+  deploy:
+    needs:
+      - login
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: pizzabox2021
+          images: fredbelotte/pizzabox
 
 name: ci-pipeline
 
